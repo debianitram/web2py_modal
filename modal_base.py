@@ -5,7 +5,7 @@
 # Modal base.
 
 from gluon import current
-from gluon.html import DIV, A, I, H3, BUTTON
+from gluon.html import DIV, A, I, H3, BUTTON, XML
 from gluon.http import HTTP
 from gluon.compileapp import LOAD
 
@@ -26,8 +26,8 @@ class ModalBase(object):
         self.modal_target = "target_%s" % self.modal_id
 
     def btn(self):
-        btn = A(I(_class=self.btn_icon),
-                self.btn_name,
+        btn = A('%s ' % self.btn_name, 
+                I(_class=self.btn_icon),
                 **{"_role": "button",
                    "_class": self.btn_class,
                    "_data-toggle": "modal",
@@ -37,23 +37,29 @@ class ModalBase(object):
 
     def window(self, content):
         div_modal = DIV(
-                        DIV(
-                            H3(self.modal_title, _id="myModalLabel"),
-                            _class="modal-header"),
-                        DIV(content, _class="modal-body"),
-                        DIV(
-                            BUTTON("Cerrar", **{"_class": "btn btn-primary",
-                                                "_data-dismiss": "modal",
-                                                "_aria-hidden": "true"}),
-                            _class="modal-footer",
-                            ),
-                        **{"_id": "%s" % self.modal_id,
-                           "_class": "modal hide face",
-                           "_tabindex": "-1",
-                           "_role": "dialog",
-                           "_aria-hidden": "true",
-                           "_aria-labelledby": "myModalLabel"}
-                    )
+            DIV(
+                DIV(
+                    DIV(
+                        BUTTON(XML('<span aria-hidden="true">&times;</span>'),
+                               **{'_class': 'close',
+                                  '_type': 'button',
+                                  '_data-dismiss': 'modal',
+                                  '_aria-label': 'Close'}),
+                        H3(self.modal_title or 'Title', _class='modal-title'),
+                        _class='modal-header'
+                    ),
+                    DIV(content, _class='modal-body'),
+                    DIV(
+                        BUTTON('Cerrar', 
+                               **{'_data-dismiss': 'modal',
+                                  '_class': 'btn btn-default'}),
+                        _class='modal-footer'
+                    ),
+                _class='modal-content'),
+            _class='modal-dialog'),
+        _class='modal',
+        _id='%s' % self.modal_id)
+        
         return div_modal
 
     def content(self):
