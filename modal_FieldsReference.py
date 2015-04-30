@@ -30,8 +30,7 @@ class modalFieldReference(ModalBase):
 
         formnamemodal = "form_%s" % self.modal_key
         table = self.field._db[self.field.type[10:]]
-        _cmd = None
-        params = {}
+        _cmd, params = None, {}
 
         form = SQLFORM(table, formname=formnamemodal)
 
