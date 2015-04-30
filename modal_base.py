@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 #-*- encoding:utf-8 -*-
 
+# Colmena Labs
+# debianitram (at) gmail.com
+
 
 # Modal base.
 
@@ -12,18 +15,35 @@ from gluon.compileapp import LOAD
 
 class ModalBase(object):
 
-    def __init__(self, **attr):
+    def __init__(self, **kwargs):
         self.auth = current.globalenv.get('auth', None)
 
         # Config Modal.
-        self.btn_title = attr.get("btn_title", "Titulo botón")
-        self.btn_name = attr.get("btn_name", "")
-        self.btn_icon = attr.get("btn_icon", "icon-minus")
-        self.btn_class = attr.get("btn_class", "")
-        self.modal_title = attr.get("modal_title", "Titulo Modal")
-        self.modal_key = attr.get("modal_key", self.__class__.__name__)
-        self.modal_id = attr.get("modal_id", "id_%s" % self.modal_key)
+        self.btn_title = kwargs.get("btn_title", "Titulo botón")
+        self.btn_name = kwargs.get("btn_name", "")
+        self.btn_icon = kwargs.get("btn_icon", "icon-minus")
+        self.btn_class = kwargs.get("btn_class", "")
+        self.modal_title = kwargs.get("modal_title", "Titulo Modal")
+        self.modal_key = kwargs.get("modal_key", self.__class__.__name__)
+        self.modal_id = kwargs.get("modal_id", "id_%s" % self.modal_key)
         self.modal_target = "target_%s" % self.modal_id
+
+        self.lambda_js = kwargs.get('lambda_js', None)
+        self.close_modal_js = "$('#%s').modal('hide');" % self.modal_id
+
+
+    
+    def js(self, form, command=None, **kwargs):
+
+        if not self.lambda_js:
+            if command:
+                self.close_modal_js += command
+                return self.close_modal_js % kwargs
+            else:
+                return self.close_modal_js % kwargs
+        else:
+            self.close_modal_js += self.lambda_js(form)
+            return self.close_modal_js
 
     def btn(self):
         btn = A('%s ' % self.btn_name, 
